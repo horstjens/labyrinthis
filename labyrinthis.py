@@ -1074,7 +1074,7 @@ class Viewer(object):
     height = 0
     images = {}
     sounds = {}
-    inventory = []
+    #inventory = []
     history = ["main"]
     cursor = 0
     name = "main"
@@ -1097,7 +1097,7 @@ class Viewer(object):
     shopmenu = {"main": [ "resume", "earn money", "buy", "sell", "show inventory"],
                 "earn money":      ["back", "plant tomatoes"],
                 "show inventory":  ["back",] ,
-                 "buy":             ["back", "wooden sword (10)", "old shield (15)"],
+                 "buy":             ["back", "wooden sword (10)", "old shield (15)", "ring mail (55)"],
                 "sell":            ["back" ],
                
                }
@@ -1318,24 +1318,55 @@ class Viewer(object):
                             Flytext(x=700, y=400, text="spielend-programmieren.at", fontsize = 100)  
 
                         elif text == "plant tomatoes":
-                            Viewer.gold += 1
-                            # ----- Gold Explosion ------
+                            #Viewer.gold += 1
+                            # ----- Tomato Explosion ------
                             Explosion(red=0, green=220, blue=0, maxlifetime=5, maxspeed=250,
                                       green_delta=25, minangle=70, maxangle=110, gravity=pygame.math.Vector2(0,-5), 
                                       posvector=pygame.math.Vector2(random.randint(0, Viewer.width),-Viewer.height + 5)
                                       )
+                        ### item to buy or sell. MUST have price in round brackets at the end, e.g. 'rusty sword (18)'
+                        elif text[-1] == ")" and text.find("(") != -1:
+                            pricepos = text.find("(")
+                            try: 
+                                price = int(text[pricepos+1:-1])
+                                name = text[:pricepos]
+                            except:
+                                price is None
+                            if price is not None:
+                                if Viewer.name == "buy":
+                                    if Viewer.gold < price:
+                                        Flytext(text="not enough gold. You have {}. you need {}".format(Viewer.gold, price))
+                                    else:
+                                        Viewer.gold -= price
+                                        Viewer.menu["show inventory"].append(text)
+                                        Viewer.menu["sell"].append(text)
+                                elif Viewer.name == "sell":
+                                    Viewer.gold += price
+                                    Viewer.menu["show inventory"].remove(text)
+                                    Viewer.menu["sell"].remove(text)
+                                    
+                                        
+                            
+                        #elif text == "wooden sword (10)":
+                        #    if Viewer.gold < 5:
+                        #        Flytext(text="not enough gold")
+                        #    else:
+                        #        Viewer.gold -= 5
+                        #        #Viewer.inventory.append("wooden sword")
+                        #        Viewer.menu["show inventory"].append("wooden sword (")
                         
-                        elif text == "Holzschwert (5 gold)":
-                            if Viewer.gold < 5:
-                                Flytext(text="not enough gold")
-                            else:
-                                Viewer.gold -= 5
-                                Viewer.inventory.append("Holzschwert")
-                                Viewer.menu["show inventory"].append("Holzschwert")
-                                
+                        #elif text == "old shield (15)":
+                        #    if Viewer.gold < 15:
+                        #        Flytext(text="not enough gold")
+                        #    else:
+                        #        Viewer.gold -= 15
+                        #        #Viewer.inventory.append("wooden sword")
+                        #        Viewer.menu["show inventory"].append("old shield")
+                        
+                    
                         
                         if Viewer.name == "resolution":
-                            # text is something like 800x600
+                            # text is something like '800x600'
                             t = text.find("x")
                             if t != -1:
                                 x = int(text[:t])
