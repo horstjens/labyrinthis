@@ -1,5 +1,5 @@
 """
-author: Horst JENS
+author: Horst JENS, Peter van der Linden und Anton Schmidt
 email: horstjens@gmail.com
 contact: see http://spielend-programmieren.at/de:kontakt
 license: gpl, see http://www.gnu.org/licenses/gpl-3.0.de.html
@@ -1080,10 +1080,11 @@ class Viewer(object):
     name = "main"
     tilesize = 50
     fullscreen = False
-    gamemenu =  {"main":            ["resume", "settings", "credits", "quit" ],
+    gamemenu =  {"main":            ["resume", "use", "equip", "settings", "credits", "quit" ],
             #main
             # cheatmenu 
-           
+            "use" :      ["back",],
+            "equip":     ["back",],
            
             "settings":        ["back", "video", ],
             #settings
@@ -1097,7 +1098,12 @@ class Viewer(object):
     shopmenu = {"main": [ "resume", "earn money", "buy", "sell", "show inventory"],
                 "earn money":      ["back", "plant tomatoes"],
                 "show inventory":  ["back",] ,
-                 "buy":             ["back", "wooden sword (10)", "old shield (15)", "ring mail (55)"],
+                "buy":             ["back", 
+                                    "wooden sword (10)",
+                                    "old shield (15)",
+                                    "ring mail (55)",
+                                    "small health potion (1)",
+                                    "medium health potion (5)"],
                 "sell":            ["back" ],
                
                }
@@ -1333,17 +1339,31 @@ class Viewer(object):
                             except:
                                 price is None
                             if price is not None:
-                                if Viewer.name == "buy":
+                                if Viewer.name == "use":
+                                   if "small health potion" in text:
+                                       VectorSprite.numbers[1].hitpoints += 10
+                                       Viewer.shopmenu["show inventory"].remove(text)
+                                       Viewer.shopmenu["sell"].remove(text)
+                                       Viewer.gamemenu["use"].remove(text)
+                                elif Viewer.name == "buy":
                                     if Viewer.gold < price:
                                         Flytext(text="not enough gold. You have {}. you need {}".format(Viewer.gold, price))
                                     else:
                                         Viewer.gold -= price
                                         Viewer.menu["show inventory"].append(text)
                                         Viewer.menu["sell"].append(text)
+                                        if "potion" in text:
+                                            Viewer.gamemenu["use"].append(text)
+                                        else:
+                                            Viewer.gamemenu["equip"].append(text)
                                 elif Viewer.name == "sell":
                                     Viewer.gold += price
                                     Viewer.menu["show inventory"].remove(text)
                                     Viewer.menu["sell"].remove(text)
+                                    if "potion" in text:
+                                        Viewer.gamemenu["use"].remove(text)
+                                    else:
+                                        Viewer.gamemenu["equip"].remove(text)
                                     
                                         
                             
