@@ -752,7 +752,8 @@ class Lizard(Monster):
                self.tired = 99
         elif self.state.__str__()== "SleepState":
             Flytext(pos=pygame.math.Vector2(self.pos.x, self.pos.y),
-                    text="Zzzz", move=pygame.math.Vector2(0,8), max_age=1)
+                    text="Zzzz", move=pygame.math.Vector2(
+                                 random.randint(-2,2),8), max_age=1)
                         
             self.dx, self.dy = 0,0
             self.tired -= 1
@@ -1079,14 +1080,11 @@ class Viewer(object):
     name = "main"
     tilesize = 50
     fullscreen = False
-    menu =  {"main":            ["resume", "settings", "credits", "earn money", "shop", "show inventory","quit" ],
+    gamemenu =  {"main":            ["resume", "settings", "credits", "quit" ],
             #main
             # cheatmenu 
-            "earn money":      ["back", "plant tomatoes"],
-            "show inventory":  ["back",] ,
-            "shop":            ["back", "buy", "sell"],
-            "sell":            ["back" ],
-            "buy":             ["back", "wooden sword (10)", "old shield (15)"],
+           
+           
             "settings":        ["back", "video", ],
             #settings
             "video":           ["back", "resolution", "fullscreen"],
@@ -1096,7 +1094,14 @@ class Viewer(object):
             "fullscreen":      ["back", "true", "false"]
             }
     
-    
+    shopmenu = {"main": [ "resume", "earn money", "buy", "sell", "show inventory"],
+                "earn money":      ["back", "plant tomatoes"],
+                "show inventory":  ["back",] ,
+                 "buy":             ["back", "wooden sword (10)", "old shield (15)"],
+                "sell":            ["back" ],
+               
+               }
+    menu = gamemenu 
     #Viewer.menu["resolution"] = pygame.display.list_modes()
  
 
@@ -1551,12 +1556,17 @@ class Viewer(object):
                     if (s.pos.x == self.player1.pos.x+dx and
                         s.pos.y == self.player1.pos.y + dy):
                         dx, dy =0, 0
-                        self.player1.hitpoints += 10
+                        #self.player1.hitpoints += 10
                         
                         Flytext(pos=pygame.math.Vector2(self.player1.pos.x,
                                     self.player1.pos.y),
                                 move=pygame.math.Vector2(0,22),
                                 text="shopping")
+                        Viewer.menu = Viewer.shopmenu
+                        Viewer.gold = VectorSprite.numbers[1].gold
+                        running = self.menu_run() 
+                        VectorSprite.numbers[1].gold = Viewer.gold
+                        Viewer.menu = Viewer.gamemenu
                 for e in self.enemygroup:
                     
                     if e.pos.x == self.player1.pos.x + dx and e.pos.y==self.player1.pos.y + dy:
@@ -1693,6 +1703,13 @@ class Viewer(object):
             # ----- FPS -----
             write(self.screen, "FPS: {:8.3}".format(
                 self.clock.get_fps() ), x=Viewer.width-200, y=10, color=(0,255,0), fontsize=12)
+            
+            write(self.screen, "gold: {}".format(
+                  VectorSprite.numbers[1].gold), 
+                  x=Viewer.width - 300, y=10, 
+                  color=(255,255,0),
+                  fontsize = 24)
+            
             # ----- log ------
             for i in range(-loglines, 0):
                 try:
