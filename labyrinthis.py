@@ -1345,6 +1345,11 @@ class Viewer(object):
                                        Viewer.shopmenu["show inventory"].remove(text)
                                        Viewer.shopmenu["sell"].remove(text)
                                        Viewer.gamemenu["use"].remove(text)
+                                   elif "medium health potion" in text:
+                                       VectorSprite.numbers[1].hitpoints += 50
+                                       Viewer.shopmenu["show inventory"].remove(text)
+                                       Viewer.shopmenu["sell"].remove(text)
+                                       Viewer.gamemenu["use"].remove(text)
                                 elif Viewer.name == "buy":
                                     if Viewer.gold < price:
                                         Flytext(text="not enough gold. You have {}. you need {}".format(Viewer.gold, price))
