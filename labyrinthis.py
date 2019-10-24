@@ -1610,6 +1610,17 @@ class Viewer(object):
                         Fireball(pos=pygame.math.Vector2(self.player1.pos.x, self.player1.pos.y),
                                  move=pygame.math.Vector2(x, 0))
                     
+                    if event.key == pygame.K_b:
+                        # --- create a block ----
+                        if self.player1.lookright:
+                            x=50
+                        else:
+                            x=-50
+                        self.player1.attack_animation()
+                        Wall(pos=pygame.math.Vector2(self.player1.pos.x + x,
+                                                     self.player1.pos.y))
+                        
+                    
                     if event.key == pygame.K_PAGEUP:
                         loglines += 4
                     
