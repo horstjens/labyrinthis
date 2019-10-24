@@ -1234,6 +1234,11 @@ class Viewer(object):
                                         "data", "wolf.png"))
             Viewer.images["wolf-a"] = pygame.image.load(os.path.join(
                                         "data","wolf-attack.png"))
+            Viewer.images["chest"] = pygame.image.load(os.path.join(
+                                        "data", "chest-plain-closed.png"))
+            Viewer.images["chest-a"] = pygame.image.load(os.path.join(
+                                        "data", "chest-plain-open.png"))
+                                        
             # --- scalieren ---
             #for name in Viewer.images:
             #    if name == "bossrocket":
