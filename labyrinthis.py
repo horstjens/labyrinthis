@@ -1125,7 +1125,7 @@ class Viewer(object):
                                     "old shield (15)",
                                     "ring mail (55)",
                                     "small health potion (1)",
-                                    "medium health potion (5)"
+                                    "medium health potion (5)",
                                     "big health potion (10)"],
                 "sell":            ["back" ],
                
@@ -1500,9 +1500,16 @@ class Viewer(object):
             WallBorder(pos=pygame.math.Vector2(x2, -y-50))
         for y2 in range(0, Viewer.height, 50):
             WallBorder(pos=pygame.math.Vector2(x, -y2-50))
+        # -------- random shop ------------
+        sx = random.choice(range(50, Viewer.width-50,50))
+        sy = random.choice(range(50, Viewer.height-50, 50))
+        Shop(pos=pygame.math.Vector2(sx, -sy))
+        
         # -------- random blocks ----------
         for x in range(50, Viewer.width-50, 50):
             for y in range(50, Viewer.height-50, 50):
+                if x==sx and y == sy:
+                    continue # no Wall on top of shop
                 if random.random() < 0.15:
                     Wall(pos=pygame.math.Vector2(x,-y))
         
@@ -1537,7 +1544,7 @@ class Viewer(object):
         running = self.menu_run()
         self.player1 = Wizard(pos=pygame.math.Vector2(500,-200))
         #print("Wizard", self.player1.number)
-        self.shop1 = Shop(pos=pygame.math.Vector2(500, -300))
+        
         self.create_level()
         pygame.mouse.set_visible(True)
         oldleft, oldmiddle, oldright  = False, False, False
