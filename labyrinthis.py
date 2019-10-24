@@ -538,7 +538,7 @@ class Fireball(VectorSprite):
     
     def _overwrite_parameters(self):
         self.hitpoints = 1
-        self.color = (255,255,0)
+        self.color = (255,0,255)
         
     def create_image(self):
         self.image = pygame.Surface((10,10))
