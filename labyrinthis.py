@@ -607,7 +607,29 @@ class Wall(VectorSprite):
             
         
         
+class WallBorder(Wall):
+    
+    def _overwrite_parameters(self):
+        self.color = (255, 50, 50)
+        self.hitpoints = 400
         
+    def create_image(self):
+        Wall.create_image(self)
+        pygame.draw.line(self.image, (0,200,0), (0,0), 
+                         (49,49), 5)
+        pygame.draw.line(self.image, (0,200,0), (0,49), 
+                         (49,0), 5)
+        self.image.set_colorkey((0,0,0))
+        self.image.convert_alpha()
+        self.image0 = self.image.copy()
+        self.rect = self.image.get_rect()
+           
+    def crack(self):
+        pass # hahahaha, indestructable
+        
+    def update(self, seconds):
+        VectorSprite.update(self, seconds)
+        self.hitpoints = 400
 
 
 class Monster(VectorSprite):
@@ -1471,13 +1493,13 @@ class Viewer(object):
             w.kill()
         # --- outer wall ---
         for x in range(0, Viewer.width, 50):
-            Wall(pos=pygame.math.Vector2(x, 0))
+            WallBorder(pos=pygame.math.Vector2(x, 0))
         for y in range(50, Viewer.height, 50):
-            Wall(pos=pygame.math.Vector2(0,-y))
+            WallBorder(pos=pygame.math.Vector2(0,-y))
         for x2 in range(0, x, 50):
-            Wall(pos=pygame.math.Vector2(x2, -y-50))
+            WallBorder(pos=pygame.math.Vector2(x2, -y-50))
         for y2 in range(0, Viewer.height, 50):
-            Wall(pos=pygame.math.Vector2(x, -y2-50))
+            WallBorder(pos=pygame.math.Vector2(x, -y2-50))
         # -------- random blocks ----------
         for x in range(50, Viewer.width-50, 50):
             for y in range(50, Viewer.height-50, 50):
@@ -1577,6 +1599,7 @@ class Viewer(object):
                             x=50
                         else:
                             x=-50
+                        self.player1.attack_animation()
                         Fireball(pos=pygame.math.Vector2(self.player1.pos.x, self.player1.pos.y),
                                  move=pygame.math.Vector2(x, 0))
                     
