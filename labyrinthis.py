@@ -752,8 +752,8 @@ class Lizard(Monster):
                self.tired = 99
         elif self.state.__str__()== "SleepState":
             Flytext(pos=pygame.math.Vector2(self.pos.x, self.pos.y),
-                    text="Zzzz", move=pygame.math.Vector2(
-                                 random.randint(-2,2),8), max_age=1)
+                    text="z", move=pygame.math.Vector2(
+                                 random.randint(15,20),8), max_age=1)
                         
             self.dx, self.dy = 0,0
             self.tired -= 1
@@ -794,7 +794,7 @@ class Wolf(Monster):
                self.tired = 99
         elif self.state.__str__()== "SleepState":
             Flytext(pos=pygame.math.Vector2(self.pos.x, self.pos.y),
-                    text="Zzzz", move=pygame.math.Vector2(0,8), max_age=1)
+                    text="z", move=pygame.math.Vector2(15,20), max_age=1)
                         
             self.dx, self.dy = 0,0
             self.tired -= 1
@@ -1103,7 +1103,8 @@ class Viewer(object):
                                     "old shield (15)",
                                     "ring mail (55)",
                                     "small health potion (1)",
-                                    "medium health potion (5)"],
+                                    "medium health potion (5)"
+                                    "big health potion (10)"],
                 "sell":            ["back" ],
                
                }
@@ -1347,6 +1348,11 @@ class Viewer(object):
                                        Viewer.gamemenu["use"].remove(text)
                                    elif "medium health potion" in text:
                                        VectorSprite.numbers[1].hitpoints += 50
+                                       Viewer.shopmenu["show inventory"].remove(text)
+                                       Viewer.shopmenu["sell"].remove(text)
+                                       Viewer.gamemenu["use"].remove(text)
+                                   elif "big health potion" in text:
+                                       VectorSprite.numbers[1].hitpoints += 100
                                        Viewer.shopmenu["show inventory"].remove(text)
                                        Viewer.shopmenu["sell"].remove(text)
                                        Viewer.gamemenu["use"].remove(text)
