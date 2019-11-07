@@ -555,7 +555,7 @@ class Wall(VectorSprite):
     
     def _overwrite_parameters(self):
         self.color = (139, 105, 20)
-        self.hitpoints = 200
+        self.hitpoints = 10
         
     def crack(self):
         # border point
