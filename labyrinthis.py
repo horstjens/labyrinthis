@@ -1804,6 +1804,16 @@ class Viewer(object):
                        
             # write text below sprites
            
+            # ----- collision detection between fireball and wall---
+            for w in self.wallgroup:
+                if w.pos == pygame.math.Vector2(0,0):
+                    continue # unnötige Borderwall
+                crashgroup=pygame.sprite.spritecollide(w,
+                           self.missilegroup, False, 
+                           pygame.sprite.collide_rect)
+                for o in crashgroup:
+                    Explosion(posvector = o.pos)
+                    o.kill()
             
             # ----- collision detection between fireball and wolf---
             for e in self.enemygroup:
