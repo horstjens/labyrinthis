@@ -1640,6 +1640,7 @@ class Viewer(object):
                         self.player1.attack_animation()
                         Fireball(pos=pygame.math.Vector2(self.player1.pos.x, self.player1.pos.y),
                                  move=pygame.math.Vector2(x, 0))
+                        turn += 1
                     
                     if event.key == pygame.K_b:
                         # --- create a block ----
@@ -1840,6 +1841,15 @@ class Viewer(object):
                     e.lookright = True
                 elif e.pos.x > self.player1.pos.x:
                     e.lookright = False
+            
+            # ---- level finished ? ------
+            print("Monsters left:", len(self.enemygroup))
+            if len(self.enemygroup) == 0:
+                Flytext(pos=pygame.math.Vector2(Viewer.width//2, -Viewer.height),
+                        move=pygame.math.Vector2(0, 5), text="level cleared",
+                        fontsize = 64, max_lifetime=5)
+                # 5 sec pause
+                self.create_level()
 
             # ----------- clear, draw , update, flip -----------------
             self.allgroup.draw(self.screen)
