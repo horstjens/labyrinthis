@@ -825,7 +825,28 @@ class Wolf(Monster):
                 self.on_event("wake up")
                 self.tired = 0
 
+class Chest(Monster):
+    
+    def _overwrite_parameters(self):
+        self.lookright = True
+        self.attacktime = 0
+        self._layer = 15
+        self.attack = 0
+        self.defense = 0
+        self.hitpoints = 1
+        self.hitpointsfull = 1
+        self.imagenames = ["chest", "chest-a"]
+        self.dx, self.dy = 0, 0
+        self.sniffrange = 0
+        self.state = SleepState()
+        self.tired = 500
+        #Bar(bossnumber=self.number)
+        self.bounty = random.randint(1,5)
+    
+    def ai(self):
+        pass
 
+    
    
 class Shop(VectorSprite):
     
@@ -1518,6 +1539,11 @@ class Viewer(object):
                 if random.random() < 0.15:
                     Wall(pos=pygame.math.Vector2(x,-y))
         
+        # ---- create some random chests -----
+        for x in range(50, Viewer.width-50, 50):
+            for y in range(50, Viewer.height-50, 50):
+                if random.random() < 0.05:
+                    Chest(pos=pygame.math.Vector2(x, -y))
         
         # ---- create random enemies ------
         pool = ["wolf","wolf","wolf", "lizard"]
