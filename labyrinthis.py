@@ -1846,8 +1846,8 @@ class Viewer(object):
             print("Monsters left:", len(self.enemygroup))
             if len(self.enemygroup) == 0:
                 Flytext(pos=pygame.math.Vector2(Viewer.width//2, -Viewer.height),
-                        move=pygame.math.Vector2(0, 5), text="level cleared",
-                        fontsize = 64, max_lifetime=5)
+                        move=pygame.math.Vector2(0, 25), text="level cleared",
+                        fontsize = 128, max_lifetime=5)
                 # 5 sec pause
                 self.create_level()
 
