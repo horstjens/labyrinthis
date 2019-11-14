@@ -825,6 +825,26 @@ class Wolf(Monster):
                 self.on_event("wake up")
                 self.tired = 0
 
+class Boss(Monster):
+    
+   def _overwrite_parameters(self):
+        self.lookright = True
+        self.attacktime = 0
+        self._layer = 15
+        self.attack = 10
+        self.defense = 5
+        self.hitpoints = 300
+        self.hitpointsfull = 300
+        self.imagenames = ["bosswolf", "bosswolf-a"]
+        self.dx, self.dy = 0, 0
+        self.sniffrange = 15
+        self.state = PatrolState()
+        self.tired = 0
+        Bar(bossnumber=self.number)
+        self.bounty = 20
+
+
+
 class Chest(Monster):
     
     def _overwrite_parameters(self):
@@ -1259,12 +1279,16 @@ class Viewer(object):
                                         "data", "chest-plain-closed.png"))
             Viewer.images["chest-a"] = pygame.image.load(os.path.join(
                                         "data", "chest-plain-open.png"))
-                                        
-            # --- scalieren ---
-            #for name in Viewer.images:
-            #    if name == "bossrocket":
-            #        Viewer.images[name] = pygame.transform.scale(
-            #                        Viewer.images[name], (60, 60))
+            # --- boss images (scaled to be bigger) ---
+            #Viewer.images["bosswolf"] = pygame.image.load(os.path.join(
+            #                            "data", "bosswolf.png"))
+            i = pygame.image.load(os.path.join(
+                                        "data", "wolf.png"))
+            Viewer.images["bosswolf"] = pygame.transform.scale(i, (150,150))
+            i = pygame.image.load(os.path.join(
+                                        "data","wolf-attack.png"))                                                    
+            Viewer.images["bosswolf-a"] = pygame.transform.scale(i, (150,150))                                                    
+                                    
             
      
     def prepare_sprites(self):
@@ -1514,9 +1538,14 @@ class Viewer(object):
             pygame.draw.line(self.screen, c, (0, y-Viewer.tilesize//2), (Viewer.width, y-Viewer.tilesize//2))
         
     
+  
     def create_level(self):
+        # --- kill old walls ----
         for w in self.wallgroup:
             w.kill()
+        # --- kill old shop ----
+        for s in self.shopgroup:
+            s.kill()
         # --- outer wall ---
         for x in range(0, Viewer.width, 50):
             WallBorder(pos=pygame.math.Vector2(x, 0))
@@ -1582,6 +1611,7 @@ class Viewer(object):
         loglines = 8
         turn = 0
         oldturn = 0
+        self.level = 1
         
         #pygame.mixer.music.play(loops=-1)
         while running:
@@ -1607,7 +1637,9 @@ class Viewer(object):
                         #running = False
                         running = self.menu_run() 
                         
-                        
+                    # --- spawn a boss -----
+                    if event.key == pygame.K_e:
+                        Boss(pos=pygame.math.Vector2(50,-50))
                     # --- move player 1 (wizard) -----
                   
                     if event.key == pygame.K_UP:
@@ -1846,9 +1878,10 @@ class Viewer(object):
             print("Monsters left:", len(self.enemygroup))
             if len(self.enemygroup) == 0:
                 Flytext(pos=pygame.math.Vector2(Viewer.width//2, -Viewer.height),
-                        move=pygame.math.Vector2(0, 25), text="level cleared",
+                        move=pygame.math.Vector2(0, 25), text="level {} cleared".format(self.level),
                         fontsize = 128, max_lifetime=5)
                 # 5 sec pause
+                self.level += 1
                 self.create_level()
 
             # ----------- clear, draw , update, flip -----------------
