@@ -676,13 +676,13 @@ class Monster(VectorSprite):
                 dy = -Viewer.tilesize
             elif self.pos.y > playerpos.y:
                 dy = Viewer.tilesize
-            return dx, dy
+            return dx, -dy
 
     def ai(self):
         playerpos = VectorSprite.numbers[1].pos
         distance = (self.pos - playerpos ).length() // Viewer.tilesize
         if distance < self.sniffrange:
-            dx, dy = self.run_to_player()
+            dx, dy = self.run_to_player() # -dy 
         else:
             dx, dy = random.choice([(0,0), (0,0), (0,0),
                                     (-Viewer.tilesize, -Viewer.tilesize),
