@@ -150,6 +150,12 @@ class State():
         """
         return self.__class__.__name__
 
+class NoneState(State):
+    """for Monsters that do neither sleep nor patrol at all"""
+    
+    def on_event(self, event):
+        return self 
+
 class SleepState(State):
 
     def on_event(self, event):
@@ -645,6 +651,7 @@ class Monster(VectorSprite):
         self.imagenames = ["wizard", "wizard-a"]
         self.dx, self.dy = 0, 0
         self.sniffrange = 5
+        self.state = NoneState()  # PatrolState() / SleepState()
         #self.state = SleepingState()
 
     def on_event(self, event):
@@ -674,6 +681,23 @@ class Monster(VectorSprite):
                                     (Viewer.tilesize, 0),
                                     (Viewer.tilesize, Viewer.tilesize)])
         self.dx, self.dy = dx, dy
+        # --- checking Patrol / SleepState
+        if self.state.__str__()=="PatrolState":
+           self.tired += random.randint(1, 10)
+           if self.tired> 100:
+               #self.state.on_event("sleepy")
+               self.on_event("sleepy")
+               self.tired = 99
+        elif self.state.__str__()== "SleepState":
+            Flytext(pos=pygame.math.Vector2(self.pos.x, self.pos.y),
+                    text="z", move=pygame.math.Vector2(15,20), max_age=1)
+                        
+            self.dx, self.dy = 0,0
+            self.tired -= 1
+            if self.tired <= 0:
+                #self.state.on_event("wake up")
+                self.on_event("wake up")
+                self.tired = 0
         
     
     
@@ -761,28 +785,7 @@ class Lizard(Monster):
         self.state = PatrolState()
         self.bounty = 1
         
-    def ai(self):
-        #if self.state ==
-        Monster.ai(self)
-        #print("ai of wolf {}: tired: {} state: {}".format(
-        #      self.number, self.tired, self.state.__str__()))
-        if self.state.__str__()=="PatrolState":
-           self.tired += random.randint(1, 10)
-           if self.tired> 100:
-               #self.state.on_event("sleepy")
-               self.on_event("sleepy")
-               self.tired = 99
-        elif self.state.__str__()== "SleepState":
-            Flytext(pos=pygame.math.Vector2(self.pos.x, self.pos.y),
-                    text="z", move=pygame.math.Vector2(
-                                 random.randint(15,20),8), max_age=1)
-                        
-            self.dx, self.dy = 0,0
-            self.tired -= 1
-            if self.tired <= 0:
-                #self.state.on_event("wake up")
-                self.on_event("wake up")
-                self.tired = 0
+   
 
     
 class Wolf(Monster):
@@ -803,28 +806,7 @@ class Wolf(Monster):
         Bar(bossnumber=self.number)
         self.bounty = 4
 
-    def ai(self):
-        #if self.state ==
-        Monster.ai(self)
-        #print("ai of wolf {}: tired: {} state: {}".format(
-        #      self.number, self.tired, self.state.__str__()))
-        if self.state.__str__()=="PatrolState":
-           self.tired += random.randint(1, 10)
-           if self.tired> 100:
-               #self.state.on_event("sleepy")
-               self.on_event("sleepy")
-               self.tired = 99
-        elif self.state.__str__()== "SleepState":
-            Flytext(pos=pygame.math.Vector2(self.pos.x, self.pos.y),
-                    text="z", move=pygame.math.Vector2(15,20), max_age=1)
-                        
-            self.dx, self.dy = 0,0
-            self.tired -= 1
-            if self.tired <= 0:
-                #self.state.on_event("wake up")
-                self.on_event("wake up")
-                self.tired = 0
-
+  
 class Boss(Monster):
     
    def _overwrite_parameters(self):
@@ -1612,6 +1594,7 @@ class Viewer(object):
         turn = 0
         oldturn = 0
         self.level = 1
+        self.boss_done = False
         
         #pygame.mixer.music.play(loops=-1)
         while running:
@@ -1875,14 +1858,21 @@ class Viewer(object):
                     e.lookright = False
             
             # ---- level finished ? ------
-            print("Monsters left:", len(self.enemygroup))
+            #print("Monsters left:", len(self.enemygroup))
             if len(self.enemygroup) == 0:
-                Flytext(pos=pygame.math.Vector2(Viewer.width//2, -Viewer.height),
-                        move=pygame.math.Vector2(0, 25), text="level {} cleared".format(self.level),
-                        fontsize = 128, max_lifetime=5)
-                # 5 sec pause
-                self.level += 1
-                self.create_level()
+                # -- time for a boss ? ----
+                if not self.boss_done:
+                    for y in range(self.level):
+                        Boss(pos=pygame.math.Vector2(150,-100-50 * y))
+                    self.boss_done = True
+                else:
+                    Flytext(pos=pygame.math.Vector2(Viewer.width//2, -Viewer.height),
+                            move=pygame.math.Vector2(0, 25), text="level {} cleared".format(self.level),
+                            fontsize = 128, max_lifetime=5)
+                    # 5 sec pause
+                    self.level += 1
+                    self.create_level()
+                    self.boss_done = False
 
             # ----------- clear, draw , update, flip -----------------
             self.allgroup.draw(self.screen)
