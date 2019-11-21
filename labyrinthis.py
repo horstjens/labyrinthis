@@ -287,6 +287,8 @@ class VectorSprite(pygame.sprite.Sprite):
             self.always_create_image = False
         if "bounty" not in kwargs:
             self.bounty = 0
+        if "gold" not in kwargs:
+            self.gold = 0
         if "color" not in kwargs:
             self.color = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
 
@@ -840,7 +842,7 @@ class Chest(Monster):
         self.imagenames = ["chest", "chest-a"]
         self.dx, self.dy = 0, 0
         self.sniffrange = 0
-        self.state = SleepState()
+        #self.state = NoneState()
         self.tired = 500
         #Bar(bossnumber=self.number)
         self.bounty = random.randint(1,5)
@@ -1124,6 +1126,8 @@ class Viewer(object):
     cursor = 0
     name = "main"
     tilesize = 50
+    maxx = 100
+    maxy = 100
     fullscreen = False
     gamemenu =  {"main":            ["resume", "use", "equip", "settings", "credits", "quit" ],
             #main
@@ -1131,8 +1135,11 @@ class Viewer(object):
             "use" :      ["back",],
             "equip":     ["back",],
            
-            "settings":        ["back", "video", ],
+            "settings":        ["back", "video", "tile size", "max. tiles x", "max. tiles y" ],
             #settings
+            "tile size":       ["back", "25x25", "50x50", "75x75", "100x100"],
+            "max. tiles x":    ["back", "50", "100", "150", "200", "250"],
+            "max. tiles y":    ["back", "50", "100", "150", "200", "250"],
             "video":           ["back", "resolution", "fullscreen"],
             #difficulty
            
@@ -1430,26 +1437,8 @@ class Viewer(object):
                                     else:
                                         Viewer.gamemenu["equip"].remove(text)
                                     
-                                        
-                            
-                        #elif text == "wooden sword (10)":
-                        #    if Viewer.gold < 5:
-                        #        Flytext(text="not enough gold")
-                        #    else:
-                        #        Viewer.gold -= 5
-                        #        #Viewer.inventory.append("wooden sword")
-                        #        Viewer.menu["show inventory"].append("wooden sword (")
-                        
-                        #elif text == "old shield (15)":
-                        #    if Viewer.gold < 15:
-                        #        Flytext(text="not enough gold")
-                        #    else:
-                        #        Viewer.gold -= 15
-                        #        #Viewer.inventory.append("wooden sword")
-                        #        Viewer.menu["show inventory"].append("old shield")
-                        
                     
-                        
+                        # ---------- submenus -------------
                         if Viewer.name == "resolution":
                             # text is something like '800x600'
                             t = text.find("x")
@@ -1460,8 +1449,32 @@ class Viewer(object):
                                 Viewer.height = y
                                 self.set_resolution()
                                 #Viewer.menucommandsound.play()
-                                    
-                        if Viewer.name == "fullscreen":
+                        
+                        elif Viewer.name == "tile size":
+                            # text is something like "50x50"
+                            t = text.find("x")
+                            if t != -1:
+                                x = int(text[:t])
+                                y = int(text[t+1:])
+                                if x == y:
+                                    Viewer.tilesize = x
+                                    print("setting grid size to ", x)
+                                    # !!! Flytext als erstes Sprite....player soll erstes Sprite sein!
+                                    #Flytext(text="set grid_size to {} x {}".format(Viewer.grid_size, Viewer.grid_size),
+                                    #        max_age = 1)
+                        
+                        elif Viewer.name == "max. tiles x":
+                            if text != Viewer.name:
+                                print("text:", text)
+                                Viewer.maxx = int(text)
+                                print("setiing max. x tiles to", int(text))
+                                
+                        elif Viewer.name == "max. tiles y":
+                            if text != Viewer.name:
+                                Viewer.maxy = int(text)
+                                print("setiing max. y tiles to", int(text))
+                            
+                        elif Viewer.name == "fullscreen":
                             if text == "true":
                                 #Viewer.menucommandsound.play()
                                 Viewer.fullscreen = True
