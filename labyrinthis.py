@@ -155,6 +155,11 @@ class NoneState(State):
     
     def on_event(self, event):
         return self 
+        
+class BerserkState(State):
+    
+    def on_event(self, event):
+        return self
 
 class SleepState(State):
 
@@ -563,7 +568,7 @@ class Wall(VectorSprite):
     
     def _overwrite_parameters(self):
         self.color = (139, 105, 20)
-        self.hitpoints = 10
+        self.hitpoints = 1
         
     def crack(self):
         # border point
@@ -659,10 +664,9 @@ class Monster(VectorSprite):
     def on_event(self, event):
         self.state = self.state.on_event(event)
 
-    def ai(self):
-        playerpos = VectorSprite.numbers[1].pos
-        distance = (self.pos - playerpos ).length() // Viewer.tilesize
-        if distance < self.sniffrange:
+
+    def run_to_player(self):
+            playerpos = VectorSprite.numbers[1].pos
             dx, dy = 0, 0
             if self.pos.x < playerpos.x:
                 dx = Viewer.tilesize
@@ -672,6 +676,13 @@ class Monster(VectorSprite):
                 dy = -Viewer.tilesize
             elif self.pos.y > playerpos.y:
                 dy = Viewer.tilesize
+            return dx, dy
+
+    def ai(self):
+        playerpos = VectorSprite.numbers[1].pos
+        distance = (self.pos - playerpos ).length() // Viewer.tilesize
+        if distance < self.sniffrange:
+            dx, dy = self.run_to_player()
         else:
             dx, dy = random.choice([(0,0), (0,0), (0,0),
                                     (-Viewer.tilesize, -Viewer.tilesize),
@@ -693,7 +704,6 @@ class Monster(VectorSprite):
         elif self.state.__str__()== "SleepState":
             Flytext(pos=pygame.math.Vector2(self.pos.x, self.pos.y),
                     text="z", move=pygame.math.Vector2(15,20), max_age=1)
-                        
             self.dx, self.dy = 0,0
             self.tired -= 1
             if self.tired <= 0:
@@ -701,7 +711,9 @@ class Monster(VectorSprite):
                 self.on_event("wake up")
                 self.tired = 0
         
-    
+        elif self.state.__str__() == "BerserkState":
+            self.dx, self.dy = self.run_to_player()
+            print("i am in berserk-state", self.dx, self.dy)
     
     def update(self, seconds):
         if self.age < self.attacktime:
@@ -822,7 +834,7 @@ class Boss(Monster):
         self.imagenames = ["bosswolf", "bosswolf-a"]
         self.dx, self.dy = 0, 0
         self.sniffrange = 15
-        self.state = PatrolState()
+        self.state = BerserkState()
         self.tired = 0
         Bar(bossnumber=self.number)
         self.bounty = 20
@@ -842,10 +854,10 @@ class Chest(Monster):
         self.imagenames = ["chest", "chest-a"]
         self.dx, self.dy = 0, 0
         self.sniffrange = 0
-        #self.state = NoneState()
+        self.state = NoneState()
         self.tired = 500
         #Bar(bossnumber=self.number)
-        self.bounty = random.randint(1,5)
+        self.bounty = random.randint(1,20)
     
     def ai(self):
         pass
